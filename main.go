@@ -3,16 +3,23 @@ package main
 import (
 	"bytes"
 	"image/jpeg"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
-	"log"
 
 	"github.com/disintegration/imaging"
 	"github.com/rwcarlsen/goexif/exif"
 )
 
+var logger *slog.Logger
+
+func init() {
+	logger = slog.Default()
+}
+
 func main() {
+
 	// Serve the HTML page on the root path
 	http.HandleFunc("/", htmlHandler)
 
@@ -20,7 +27,6 @@ func main() {
 	http.HandleFunc("/upload", uploadHandler)
 
 	// Start the server on port
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -32,19 +38,6 @@ func main() {
 
 	if err != nil {
 		log.Fatal("Server error:", err)
-	}
-}
-
-var logger *slog.Logger
-
-func init() {
-	// Check if the LOGGING_ENABLED environment variable is set to "false"
-	if os.Getenv("LOGGING_ENABLED") == "false" {
-		// Create a logger that discards all log messages
-		logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
-	} else {
-		// Create a logger with default settings
-		logger = slog.Default()
 	}
 }
 
@@ -81,7 +74,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "EXIF data not found", http.StatusBadRequest)
 		return
 	}
-	logger.Info("EXIF data found", "exif", ex.String())
+	logger.Info("EXIF data found", slog.Any("metadata", ex))
 
 	// Seek the file back to the beginning to read the image for further processing
 	file.Seek(0, 0)
@@ -112,7 +105,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(imgBuffer.Bytes())
 
 	logger.Info("EXIF image removed successfully")
-
 }
 
 func htmlHandler(w http.ResponseWriter, r *http.Request) {

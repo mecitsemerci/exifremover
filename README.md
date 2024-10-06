@@ -48,7 +48,6 @@ To upload an image and remove its EXIF metadata, follow these steps:
 You can customize the behavior of the application by setting environment variables. Here are some available options:
 
 - `PORT`: The port number on which the application will listen. Default is `8080`.
-- `LOGGING_ENABLED`: Set to "false" to disable logging. Default is "true".
 
 ## Acknowledgments
 
