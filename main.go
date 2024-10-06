@@ -108,5 +108,5 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func htmlHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./index.html")
+	http.ServeFile(w, r, "./views/index.html")
 }
