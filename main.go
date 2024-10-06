@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/disintegration/imaging"
-	"github.com/google/uuid"
 	"github.com/rwcarlsen/goexif/exif"
 )
 
@@ -61,7 +60,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Set headers to download the image
 	w.Header().Set("Content-Type", "image/jpeg")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=cleaned_image_%s.jpg", uuid.New().String()))
+	w.Header().Set("Content-Disposition", "attachment; filename=cleaned_image.jpg")
 	w.Header().Set("Cache-Control", "no-store")
 
 	// Write the image to the response
