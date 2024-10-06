@@ -1,47 +1,57 @@
 # EXIF Metadata Remover
 
-A simple Go web application that removes EXIF metadata from uploaded images.
+A simple web application that removes EXIF metadata from uploaded images.
 
-## Installation
+## Features
 
-To install the project, follow these steps:
+* Upload images via a web browser.
+* Uploaded images are displayed on the page.
+* EXIF metadata is removed from the uploaded images before they are displayed.
 
-1. Install Go (version 1.16 or higher) if you haven't already. You can download it from the [official Go website](https://golang.org/dl/).
+## Getting Started
 
-2. Clone the project repository:
+### Prerequisites
 
-```bash
-git clone https://github.com/mecitsemerci/exifremover.git
-```
+* **Go:** Make sure you have Go installed on your system. You can download it from [https://go.dev/](https://go.dev/).
+* **Docker (Optional):** If you prefer to run the application in a Docker container, you'll need Docker installed.
 
-3. Navigate to the project directory:
+### Running the Application
 
-```bash
-cd exifremover
-```
+1. **Clone the repository:**
 
-4. Build the project:
+   ```bash
+   git clone https://github.com/mecitsemerci/exifremover.git
+   cd exifremover
+   ```
 
-```bash
-go build
-```
+2. **Build the project:**
 
-## Usage
+   ```bash
+   go build
+   ```
 
-To run the application, execute the following command:
+3. **Run the application:**
 
-```bash
-./exifremover
-```
+   ```bash
+   ./exifremover
+   ```
 
-The application will start listening on port 8080 by default. You can access it in your web browser by navigating to `http://localhost:8080`.
+    or
+    
 
-To upload an image and remove its EXIF metadata, follow these steps:
+    ```bash
+    make docker-run
+    ```
 
-1. Click on the "Choose File" button.
-2. Select an image file from your computer.
-3. Click on the "Upload" button.
-4. After the upload is complete, you will see a download link below the image. Click on the link to download the image with the EXIF metadata removed.
+   The application will start listening on port 8080 by default. You can access it in your web browser by navigating to `http://localhost:8080`.
+
+4. **Upload an image:**
+
+   Click on the "Choose File" button, select an image file from your computer, and click on the "Upload" button.
+
+5. **View the uploaded image with EXIF metadata removed:**
+
+   After the upload is complete, you will see the uploaded image displayed on the page. The EXIF metadata has been removed from the image before it is displayed.
 
 ## Environment Variables
 
