@@ -2,6 +2,8 @@
 
 A simple web application that removes EXIF metadata from uploaded images.
 
+![Preview of the application](/views/img/app.png)
+
 ## Features
 
 * Upload images via a web browser.
@@ -37,7 +39,7 @@ A simple web application that removes EXIF metadata from uploaded images.
    ```
 
     or
-    
+
 
     ```bash
     make docker-run
@@ -52,6 +54,14 @@ A simple web application that removes EXIF metadata from uploaded images.
 5. **View the uploaded image with EXIF metadata removed:**
 
    After the upload is complete, you will see the uploaded image displayed on the page. The EXIF metadata has been removed from the image before it is displayed.
+
+```bash
+
+curl --location 'http://localhost:8080/upload' \
+--header 'Content-Type: multipart/form-data' \
+--form 'photo=@"/Users/[yourname]/exifremover/testdata/test.jpg"'
+
+```
 
 ## Environment Variables
 
