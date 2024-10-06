@@ -1,20 +1,18 @@
 package main
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"image/jpeg"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/disintegration/imaging"
+	"github.com/google/uuid"
 	"github.com/rwcarlsen/goexif/exif"
 )
 
-// Upload handler to process the image and return JSON response
+// Upload handler to process the image and return it as a downloadable file
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -38,20 +36,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the image contains EXIF data
 	ex, err := exif.Decode(file)
-
+	
 	if err != nil {
-		response := map[string]interface{}{
-			"status":  "failed",
-			"message": "EXIF data is not available",
-			"error": err.Error(),
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
-		return
-
+		http.Error(w, "EXIF data not found", http.StatusBadRequest)
+        return
 	}
-	log.Println(ex)
 
 	// Seek the file back to the beginning to read the image for further processing
 	file.Seek(0, 0)
@@ -63,34 +52,25 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate a filename and save the image without EXIF data
-	timestamp := time.Now().Unix()
-	fileName := fmt.Sprintf("cleaned_image_%d.jpg", timestamp)
-	filePath := filepath.Join(".", "uploads", fileName)
-
-	outFile, err := os.Create(filePath)
-	if err != nil {
-		http.Error(w, "Failed to save image", http.StatusInternalServerError)
-		return
-	}
-	defer outFile.Close()
-
-	// Encode and save the cleaned image
-	err = jpeg.Encode(outFile, img, nil)
+	// Prepare the cleaned image in memory
+	var imgBuffer bytes.Buffer
+	err = jpeg.Encode(&imgBuffer, img, nil)
 	if err != nil {
 		http.Error(w, "Failed to encode image", http.StatusInternalServerError)
 		return
 	}
+	// Set headers to download the image
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=cleaned_image_%s.jpg", uuid.New().String()))
+	w.Header().Set("Cache-Control", "no-store")
 
-	// Create JSON response
-	response := map[string]interface{}{
-		"status":   "success",
-		"imageUrl": fmt.Sprintf("/uploads/%s", fileName),
-		"message":  "EXIF metadata removed successfully",
-	}
+	// Write the image to the response
+	w.Write(imgBuffer.Bytes())
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	// Optionally: Log whether EXIF data was found
+	log.Printf("EXIF found: %v\n", true)
+	log.Print(ex)
+
 }
 
 func htmlHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,21 +78,12 @@ func htmlHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Ensure the upload directory exists
-	err := os.MkdirAll("./uploads", os.ModePerm)
-	if err != nil {
-		log.Fatalf("Failed to create upload directory: %v", err)
-	}
-
-	// Serve static files for uploads
-	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
-
 	// Serve the HTML page on the root path
 	http.HandleFunc("/", htmlHandler)
 
 	// Handle file upload and EXIF removal
 	http.HandleFunc("/upload", uploadHandler)
 
-	fmt.Println("Server starting on :8080...")
+	log.Println("Server starting on :8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

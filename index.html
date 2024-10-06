@@ -32,26 +32,16 @@
                     <p class="text-gray-500 mt-2">Processing...</p>
                 </div>
             </div>
-
-            <div id="result" class="hidden text-center mt-4">
-                <p id="message" class="text-green-500"></p>
-                <a id="download-link" class="text-blue-600 hover:underline" target="_blank">Download Processed Image</a>
-            </div>
         </form>
     </div>
 
     <script>
         const form = document.getElementById('upload-form');
         const spinner = document.getElementById('spinner');
-        const result = document.getElementById('result');
-        const message = document.getElementById('message');
-        const downloadLink = document.getElementById('download-link');
 
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-
             spinner.classList.remove('hidden');
-            result.classList.add('hidden');
 
             const formData = new FormData(form);
 
@@ -59,17 +49,22 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
                 spinner.classList.add('hidden');
 
-                if (data.status === 'success') {
-                    result.classList.remove('hidden');
-                    message.textContent = data.message;
-                    downloadLink.href = data.imageUrl;
-                    downloadLink.textContent = 'Download Processed Image';
+                if (response.ok) {
+                    // Trigger download
+                    response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'cleaned_image.jpg';  // Filename for the download
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    });
                 } else {
-                    alert('An error occurred \n' + data.message + '\n' + data.error);
+                    alert('Error processing image');
                 }
             })
             .catch(error => {
