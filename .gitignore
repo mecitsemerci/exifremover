@@ -1,0 +1,27 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test results
+/coverage.*
+/coverage/
+
+# IDE settings
+.idea/
+.vscode/
+
+# Go specific files
+*.test
+*.bench
+/vendor/
+/dist/
+
+# Mac-specific files
+*.DS_Store
+
+# All other files
+exifremover
+/exifremover/

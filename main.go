@@ -74,7 +74,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "EXIF data not found", http.StatusBadRequest)
 		return
 	}
-	logger.Info("EXIF data found", slog.Any("metadata", ex))
+	logger.Info("EXIF data found", slog.Any("metadata", ex.String()))
 
 	// Seek the file back to the beginning to read the image for further processing
 	file.Seek(0, 0)
