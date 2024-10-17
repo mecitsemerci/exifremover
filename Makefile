@@ -1,8 +1,8 @@
 build:
-	go build -o main .
+	go build -o exifremover .
 
 run: build
-	./main
+	./exifremover
 
 
 docker-run: docker-build
